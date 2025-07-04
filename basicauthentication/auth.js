@@ -1,11 +1,12 @@
-const { base64 } = 'base-64'
-// import utf8 from utf8
-
 
 function decodeCredentials(authHeader) {
     //if it does not console log it will be hard for me to understand.
-    console.log(authHeader);
-    console.log(base64.decode(authHeader.Basic));
+    // Convert a Base64 string back to the original string
+    const base64Credentials = authHeader.split(' ')[1];
+    const credentials = Buffer.from(base64Credentials, 'base64').toString('utf-8');
+
+    console.log('Base64 Decoded:', credentials);
+
     return [];
 }
 
@@ -13,7 +14,8 @@ function decodeCredentials(authHeader) {
 
 function authMiddleware(req, res, next) {
     console.log('does this even run bro');
-    console.log(req.body);
+    console.log(req.username)
+    console.log(req.headers.authorization);
     // Take the header and decode credentials
     const [username, password] = decodeCredentials(
         req.headers.authorization || ''
