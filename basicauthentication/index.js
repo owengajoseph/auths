@@ -1,14 +1,16 @@
 import express from 'express'
 const app = express()
-import {authMiddleware} from './auth.js'
+import { authMiddleware } from './auth.js'
 
 
 
 app.use(authMiddleware);
 
-
+// Respond with authenticate header on auth failure.
 
 app.get('/', (req, res) => {
+    res.set('WWW-Authenticate', 'Basic realm="user_pages"');
+    res.status(401).send('Authentication required.');
     res.send('hello world');
 })
 
