@@ -1,39 +1,33 @@
-import express, { json } from 'express'
 import jwt from 'jsonwebtoken'
-import { data } from './data.js';
 
+const {
+    generateKeyPairSync,
+} = await import('node:crypto');
 
-const app = express();
-app.use(express.json());
+const {
+    publicKey,
+    privateKey,
+} = generateKeyPairSync('rsa', {
+    modulusLength: 4096,
+    publicKeyEncoding: {
+        type: 'spki',
+        format: 'pem',
+    },
+    privateKeyEncoding: {
+        type: 'pkcs8',
+        format: 'pem',
+        cipher: 'aes-256-cbc',
+        passphrase: 'top secret',
+    },
+});
 
-let JWT_SECRET = 'my-secret-key'
+console.log(privateKey);
+console.log(publicKey);
 
-let token = jwt.sign({ foo: 'bar' }, JWT_SECRET)
+const token = jwt.sign(
+    { foo: 'bar' },
+    { key: privateKey, passphrase: 'top secret' },
+    { algorithm: 'RS512' }
+);
+
 console.log(token);
-
-app.post('/login', (req, res) => {
-    console.log(req.body);
-
-    //i was to verfy but it is the opposite
-    let { name, pass } = req.body;
-
-    res.send(
-        token
-    ).status(200);
-
-    //  let decoded =jwt.verify(token,'shhhh');
-
-    // console.log(decoded);
-
-    
-})
-
-app.listen(5000, () => {
-    console.log("server running on port 5000");
-})
-/*
-NOTE: it is tricky to understand headers for a person who is starting
-the way 
-
-
- */
